@@ -16,14 +16,12 @@ public class NetworkingManager : ModNetworkBehaviour
     {
         base.ModRegisterRPCs(modNetworkObject);
 
-        Debug.Log("ModRegisterRPCs");
         RPC_LOAD_SCENE = modNetworkObject.RegisterRPC(ClientLoadScene);
         RPC_PLAYER_WIN = modNetworkObject.RegisterRPC(ClientPlayerWon);
     }
 
     public void ServerLoadScene(string name)
     {
-        Debug.Log("ServerLoadScene");
         if (modNetworkObject == null || !modNetworkObject.IsServer()) return;
 
         modNetworkObject.SendRPC(RPC_LOAD_SCENE, ModRPCRecievers.Others, name);
@@ -33,13 +31,11 @@ public class NetworkingManager : ModNetworkBehaviour
 
     private void ClientLoadScene(ModNetworkReader reader, ModRPCInfo info)
     {
-        Debug.Log("ClientLoadScene");
         ModScenes.Load(reader.ReadString());
     }
 
     public void ServerPlayerWon(ModPlayerController player)
     {
-        Debug.Log("Server Player Won");
         if (modNetworkObject == null || !modNetworkObject.IsServer()) return;
 
         modNetworkObject.SendRPC(RPC_PLAYER_WIN, ModRPCRecievers.All, player.modNetworkObject.GetNetworkID());
@@ -47,7 +43,6 @@ public class NetworkingManager : ModNetworkBehaviour
 
     private void ClientPlayerWon(ModNetworkReader reader, ModRPCInfo info)
     {
-        Debug.Log("Client Player Won");
         var player = ModInstance.Instance.GetModPlayerControllerByNetworkid(reader.ReadUInt32());
         StartCoroutine(PlayerWinCoroutine(player));
     }
@@ -55,18 +50,20 @@ public class NetworkingManager : ModNetworkBehaviour
     public IEnumerator PlayerWinCoroutine(ModPlayerController player)
     {
         MinigameManager.isPaused = true;
-        Debug.LogError("Player Win " + player);
         MinigameManager.Instance.winText.text = $"Player {RemoveHtmlTags(player.GetPlayerName())} won";
         MinigameManager.Instance.winText.gameObject.SetActive(true);
 
         var wait = new WaitForSeconds(10);
-        Debug.Log(wait);
         yield return wait;
-        Debug.Log("0");
 
         MinigameManager.Instance.winText.gameObject.SetActive(false);
         MinigameManager.isPaused = false;
-        ModInstance.Instance.ServerPlayAgainOrReturnToLobby();
+
+        if(player.modNetworkObject.IsServer())
+        {
+            MinigameManager.ResetManager();
+            ModdedGameMode.Instance.networkingManager.ServerLoadScene(MinigameManager.Instance.lobbyScene);
+        }
     }
 
     public static string RemoveHtmlTags(string text)

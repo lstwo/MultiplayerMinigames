@@ -42,6 +42,7 @@ public class ModdedGameMode : ModFreemodeGamemode
     {
         base.OnSpawnedPlayerController(playerController);
         UpdatePlayerState(playerController);
+        playerController.ServerSetAllowedCustomClothingAbilities(false);
     }
 
     protected override void ModAwake()

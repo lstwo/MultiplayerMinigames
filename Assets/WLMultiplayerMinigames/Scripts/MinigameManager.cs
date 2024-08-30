@@ -91,7 +91,8 @@ public class MinigameManager : ModScriptBehaviour
 
         if(normalPlayer == null)
         {
-            ModInstance.Instance.ServerPlayAgainOrReturnToLobby();
+            ResetManager();
+            ModdedGameMode.Instance.networkingManager.ServerLoadScene("MainScene");
             return;
         }
 
