@@ -10,13 +10,13 @@ public class MainMenuGameMode : ModdedGameMode
 
     public override ModPlayerCharacterSpawnPoint GetPlayerSpawnPoint(ModPlayerController playerController)
     {
-        if (playerController.modNetworkObject.IsOwner())
+        if (playerController.modNetworkObject.IsServer())
         {
             return hostSpawnPoint;
         }
         else
         {
-            return base.GetPlayerSpawnPoint(playerController);
+            return defaultSpawnPoint;
         }
     }
 }

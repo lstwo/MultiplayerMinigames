@@ -1,6 +1,7 @@
 using ModWobblyLife;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
 using Tymski;
 using UMod;
@@ -69,6 +70,20 @@ public class MinigameManager : ModScriptBehaviour
     {
         if(isPaused) return;
 
+        ModPlayerController winner = null;
+
+        if(ModdedGameMode.Instance.minigameType == ModdedGameMode.MinigameType.Elimination)
+        {
+            winner = CheckPlayerCount_Elimination();
+        }
+        else if(ModdedGameMode.Instance.minigameType == ModdedGameMode.MinigameType.Qualification)
+        {
+            winner = CheckPlayerCount_Qualification();
+        }
+    }
+
+    public static ModPlayerController CheckPlayerCount_Elimination()
+    {
         var normalCount = 0;
         ModPlayerController normalPlayer = null;
 
@@ -76,27 +91,58 @@ public class MinigameManager : ModScriptBehaviour
         {
             var state = GetPlayerState(player);
 
-            if(state == PlayerState.Normal)
+            if (state == PlayerState.Normal)
             {
                 normalCount++;
 
-                if(normalCount > 1)
+                if (normalCount > 1)
                 {
-                    return;
+                    return null;
                 }
 
                 normalPlayer = player;
             }
         }
 
-        if(normalPlayer == null)
+        if(normalCount == 0)
         {
             ResetManager();
             ModdedGameMode.Instance.networkingManager.ServerLoadScene("MainScene");
-            return;
+        }
+
+        if (normalPlayer == null)
+        {
+            return null;
         }
 
         ModdedGameMode.Instance.networkingManager.ServerPlayerWon(normalPlayer);
+
+        return normalPlayer;
+    }
+
+    public static ModPlayerController CheckPlayerCount_Qualification()
+    {
+        var normalCount = 0;
+        ModPlayerController normalPlayer = null;
+
+        foreach (var player in ModInstance.Instance.GetModPlayerControllers())
+        {
+            var state = GetPlayerState(player);
+
+            if (state == PlayerState.Normal)
+            {
+                normalCount++;
+
+                if (normalCount > 1)
+                {
+                    return null;
+                }
+
+                normalPlayer = player;
+            }
+        }
+
+        return normalPlayer;
     }
 
     public override void OnModUnload()
@@ -109,5 +155,6 @@ public enum PlayerState
 {
     NotFound,
     Normal,
-    Eliminated
+    Eliminated,
+    Qualified
 }

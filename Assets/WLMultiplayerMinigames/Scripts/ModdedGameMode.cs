@@ -1,4 +1,5 @@
 using ModWobblyLife;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,9 @@ public class ModdedGameMode : ModFreemodeGamemode
     [Space(5)]
     public bool allowNormalRespawning = false;
     public bool allowEliminatedRespawning = false;
+
+    [Space(5)]
+    public MinigameType minigameType;
 
     public void EliminatePlayer(ModPlayerController playerController)
     {
@@ -72,5 +76,12 @@ public class ModdedGameMode : ModFreemodeGamemode
                 controller.SetAllowedToRespawn(allowEliminatedRespawning);
             }
         }
+    }
+
+    [Serializable]
+    public enum MinigameType
+    {
+        Elimination,
+        Qualification
     }
 }

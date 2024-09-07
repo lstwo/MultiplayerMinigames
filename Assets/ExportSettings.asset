@@ -13,15 +13,7 @@ MonoBehaviour:
   m_Name: ExportSettings
   m_EditorClassIdentifier: 
   activeProfile: 0
-  exportProfiles:
-  - referencePaths: []
-    modName: WLMultiplayerMinigames
-    modAuthor: 
-    modVersion: 1.0.0
-    modDescription: 
-    modAssetPath: Assets/WLMultiplayerMinigames
-    modExportPath: 
-    modIcon: {fileID: 0}
+  exportProfiles: []
   logLevel: 3
   optimizeMode: 0
   compressionLevel: 2
